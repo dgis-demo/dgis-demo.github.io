@@ -21,14 +21,13 @@
     <div id="map"></div>
     <script>
         let map = L.map('map', {
-          center: [41.57, -72.69],
-          zoom: 3,
+          center: [45.25, 19.84],
+          zoom: 12,
           tap: false
         });
 
         let controlLayers = L.control.layers( null, null, {
           position: 'topright',
-          collapsed: false
         }).addTo(map);
 
         let measureControl = L.control.measure({
@@ -41,6 +40,15 @@
           completedColor: 'blue',
         }).addTo(map);
 
+        let markerProperties = {
+            'radius': 6,
+            'fillColor': 'white',
+            'fillOpacity': 1,
+        };
+        let polylineProperties = {
+            'weight': 6,
+        };
+
         fetch('https://raw.githubusercontent.com/dgis-demo/notes/map/snippets/JS/routes/routes.json')
             .then(response => response.json())
             .then(json =>
@@ -48,15 +56,18 @@
                     let groups = {};
 
                     for (let route of json) {
+                        let randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
                         let name = `${route.shortName}: ${route.longName}`;
                         let layers = [];
 
                         for (let line of route.patterns) {
-                            let polyline = L.geoJson(wellknown.parse(line.wktGeometry));
+                            polylineProperties.color = randomColor;
+                            let polyline = L.geoJson(wellknown.parse(line.wktGeometry), polylineProperties);
                             layers.push(polyline);
 
                             for (let stop of line.stops) {
-                                let marker = L.circleMarker([stop.lat, stop.lon], {'radius': 4});
+                                markerProperties.color = randomColor;
+                                let marker = L.circleMarker([stop.lat, stop.lon], markerProperties);
                                 layers.push(marker);
                             }
                         }
