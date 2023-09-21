@@ -40,13 +40,20 @@
           completedColor: 'blue',
         }).addTo(map);
 
-        let markerProperties = {
+        let markerStyle = {
             'radius': 6,
             'fillColor': 'white',
             'fillOpacity': 1,
         };
-        let polylineProperties = {
+        let polylineStyle = {
             'weight': 6,
+        };
+        let stopTooltipStyle = {
+            'offset': [10, 10],
+        };
+        let polylineTooltipStyle = {
+            'offset': [10, 10],
+            'permanent': true,
         };
 
         fetch('https://raw.githubusercontent.com/dgis-demo/notes/map/snippets/JS/routes/routes.json')
@@ -61,13 +68,15 @@
                         let layers = [];
 
                         for (let line of route.patterns) {
-                            polylineProperties.color = randomColor;
-                            let polyline = L.geoJson(wellknown.parse(line.wktGeometry), polylineProperties);
+                            polylineStyle.color = randomColor;
+                            let polyline = L.geoJson(wellknown.parse(line.wktGeometry), polylineStyle);
+                            polyline.bindTooltip(name, polylineTooltipStyle);
                             layers.push(polyline);
 
                             for (let stop of line.stops) {
-                                markerProperties.color = randomColor;
-                                let marker = L.circleMarker([stop.lat, stop.lon], markerProperties);
+                                markerStyle.color = randomColor;
+                                let marker = L.circleMarker([stop.lat, stop.lon], markerStyle);
+                                marker.bindTooltip(stop.name, stopTooltipStyle);
                                 layers.push(marker);
                             }
                         }
