@@ -34,10 +34,10 @@
             // overriden from https://github.com/Leaflet/Leaflet/blob/3b62c7ec96242ee4040cf438a8101a48f8da316d/src/control/Control.Layers.js#L164C12-L164C12
             this._container.classList.add('leaflet-control-layers-expanded');
             this._section.style.height = null;
-            const acceptableHeight = this._map.getSize().y - (this._container.offsetTop + 50);
+            const acceptableHeight = this._map.getSize().y - (this._container.offsetTop + 300);
             if (acceptableHeight < this._section.clientHeight) {
                 this._section.classList.add('leaflet-control-layers-scrollbar');
-                this._section.style.height = `300px`;
+                this._section.style.height = `${acceptableHeight}px`;
             } else {
                 this._section.classList.remove('leaflet-control-layers-scrollbar');
             }
