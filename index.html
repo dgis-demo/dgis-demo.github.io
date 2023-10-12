@@ -28,6 +28,7 @@
 
         let controlLayers = L.control.layers( null, null, {
           position: 'topright',
+          collapsed: false,
         }).addTo(map);
 
         let measureControl = L.control.measure({
@@ -51,16 +52,12 @@
         let stopTooltipStyle = {
             'offset': [10, 10],
         };
-        let polylineTooltipStyle = {
-            'offset': [10, 10],
-            'permanent': true,
-        };
 
         fetch('https://raw.githubusercontent.com/dgis-demo/notes/map/snippets/JS/routes/routes.json')
             .then(response => response.json())
             .then(json =>
                 {
-                    let groups = {};
+                    let groups = [];
 
                     for (let route of json) {
                         let randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
@@ -70,7 +67,6 @@
                         for (let line of route.patterns) {
                             polylineStyle.color = randomColor;
                             let polyline = L.geoJson(wellknown.parse(line.wktGeometry), polylineStyle);
-                            polyline.bindTooltip(name, polylineTooltipStyle);
                             layers.push(polyline);
 
                             for (let stop of line.stops) {
@@ -82,15 +78,23 @@
                         }
 
                         let group = L.layerGroup(layers);
-                        groups[name] = group;
+                        group.color = randomColor;
+                        group.name = name;
+                        groups.push(group);
                     }
 
-                    for (let name in groups) {
-                        controlLayers.addOverlay(groups[name], name);
+                    for (let group of groups) {
+                        controlLayers.addOverlay(group, group.name);
+                    }
+
+                    let inputs = map._container.querySelectorAll('.leaflet-control-layers-overlays input');
+
+                    for (let i = 0; i < inputs.length; i++) {
+                        inputs[i].style.outline = 'solid 4px';
+                        inputs[i].style.color = groups[i].color;
                     }
                 }
             )
-
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
